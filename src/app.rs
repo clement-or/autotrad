@@ -3,9 +3,12 @@ mod views;
 
 use eframe::egui;
 
+use self::views::AppView;
+
 pub struct App {
-    cur_view: Box<dyn views::AppView>,
     cur_state: State,
+    default_view: views::Default,
+    selectregion_view: views::SelectRegion,
 }
 
 impl App {}
@@ -13,8 +16,9 @@ impl App {}
 impl Default for App {
     fn default() -> Self {
         Self {
-            cur_view: Box::new(views::SelectRegion::default()),
             cur_state: State::None,
+            default_view: views::Default::default(),
+            selectregion_view: views::SelectRegion::default(),
         }
     }
 }
@@ -22,12 +26,11 @@ impl Default for App {
 #[allow(unused_must_use)]
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        match self.cur_state {
-            State::Default => self.cur_view = Box::new(views::SelectRegion::default()),
-            State::PendingRegionSelection => (),
-            _ => (),
-        }
-        let event = self.cur_view.update(ctx, _frame);
+        let event = match self.cur_state {
+            State::Default => self.selectregion_view.update(ctx, _frame),
+            State::PendingRegionSelection => views::Event::Nothing,
+            _ => views::Event::Nothing,
+        };
 
         self.cur_state.run();
         let new_state = self.cur_state.next(&event);

@@ -16,7 +16,7 @@ pub trait AppView {
 //
 // --- Default state
 //
-
+#[derive(Default)]
 pub struct Default {}
 
 //
@@ -64,10 +64,8 @@ impl SelectRegion {
                 None
             }
         } {
-            println!("Inside: {:?}", rect);
             self.selection = rect
         }
-        println!("Outside: {:?}", self.selection);
 
         let shape = RectShape {
             rect: self.selection,
